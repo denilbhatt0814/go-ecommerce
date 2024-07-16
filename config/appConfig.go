@@ -8,9 +8,12 @@ import (
 )
 
 type AppConfig struct {
-	ServerPort string
-	Dsn        string // Data Source Name or DB_URL
-	AppSecret  string
+	ServerPort             string
+	Dsn                    string // Data Source Name or DB_URL
+	AppSecret              string
+	TwillioAccountSid      string
+	TwillioAuthToken       string
+	TwillioFromPhoneNumber string
 }
 
 func SetupEnv() (cfg AppConfig, err error) {
@@ -34,5 +37,27 @@ func SetupEnv() (cfg AppConfig, err error) {
 		return AppConfig{}, errors.New("env variables not found")
 	}
 
-	return AppConfig{ServerPort: httpPort, Dsn: dsn, AppSecret: appSecret}, nil
+	twillioAccountSid := os.Getenv("TWILLIO_ACCOUNT_SID")
+	if len(twillioAccountSid) < 1 {
+		return AppConfig{}, errors.New("env variables not found")
+	}
+
+	twillioAuthToken := os.Getenv("TWILLIO_AUTH_TOKEN")
+	if len(twillioAuthToken) < 1 {
+		return AppConfig{}, errors.New("env variables not found")
+	}
+
+	twillioFromPhoneNumber := os.Getenv("TWILLIO_FROM_PHONE_NUMBER")
+	if len(twillioFromPhoneNumber) < 1 {
+		return AppConfig{}, errors.New("env variables not found")
+	}
+
+	return AppConfig{
+		ServerPort:             httpPort,
+		Dsn:                    dsn,
+		AppSecret:              appSecret,
+		TwillioAccountSid:      twillioAccountSid,
+		TwillioAuthToken:       twillioAuthToken,
+		TwillioFromPhoneNumber: twillioFromPhoneNumber,
+	}, nil
 }
